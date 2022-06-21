@@ -19,6 +19,7 @@ from squidasm.sim.stack.context import NetSquidContext
 from squidasm.sim.stack.csocket import ClassicalSocket
 from squidasm.sim.stack.program import Program, ProgramContext
 from squidasm.sim.stack.signals import SIGNAL_HAND_HOST_MSG, SIGNAL_HOST_HOST_MSG
+from squidasm.sim.stack.db import add_call_trace
 
 
 class HostComponent(Component):
@@ -54,6 +55,12 @@ class HostComponent(Component):
 
 class Host(ComponentProtocol):
     """NetSquid protocol representing a Host."""
+
+    def __getattribute__(self, item):
+        if item in {'receive_qnos_msg', 'send_qnos_msg'}:
+            add_call_trace(object_name=object.__getattribute__(self, "name"),
+                           attr_name=item)
+        return object.__getattribute__(self, item)
 
     def __init__(self, comp: HostComponent, qdevice_type: Optional[str] = "nv") -> None:
         """Qnos protocol constructor.

@@ -159,7 +159,7 @@ def computation_round(
 
 
 if __name__ == "__main__":
-    num_times = 100
+    num_times = 1
     LogManager.set_log_level("WARNING")
 
     ns.set_qstate_formalism(ns.qubits.qformalism.QFormalism.DM)

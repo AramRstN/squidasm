@@ -23,6 +23,7 @@ from squidasm.sim.stack.common import (
     PhysicalQuantumMemory,
     PortListener,
 )
+from squidasm.sim.stack.db import add_call_trace
 from squidasm.sim.stack.netstack import Netstack, NetstackComponent
 from squidasm.sim.stack.signals import SIGNAL_HOST_HAND_MSG, SIGNAL_PROC_HAND_MSG
 
@@ -109,6 +110,12 @@ class RunningApp:
 
 class Handler(ComponentProtocol):
     """NetSquid protocol representing a QNodeOS handler."""
+
+    def __getattribute__(self, item):
+        if item in {'_receive_host_msg', '_send_host_msg'}:
+            add_call_trace(object_name=object.__getattribute__(self, "name"),
+                           attr_name=item)
+        return object.__getattribute__(self, item)
 
     def __init__(
         self, comp: HandlerComponent, qnos: Qnos, qdevice_type: Optional[str] = "nv"
